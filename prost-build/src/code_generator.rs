@@ -16,14 +16,13 @@ use prost_types::{
 
 use crate::ast::{Comments, Method, Service};
 use crate::context::Context;
+use crate::enums::EnumRepr;
 use crate::ident::{strip_enum_prefix, to_snake, to_upper_camel};
+use crate::syntax::Syntax;
 use crate::Config;
 
 mod c_escaping;
 use c_escaping::unescape_c_escape_string;
-
-mod syntax;
-use syntax::Syntax;
 
 /// State object for the code generation process on a single input file.
 pub struct CodeGenerator<'a, 'b> {
@@ -451,7 +450,7 @@ impl<'b> CodeGenerator<'_, 'b> {
                 self.buf
                     .push_str(&format!(" = {:?}", bytes_type.annotation()));
             }
-            Type::Enum => self.push_enum_type_annotation(fq_message_name, field.descriptor.name()),
+            Type::Enum => self.push_enum_type_annotation(fq_message_name, &field.descriptor),
             _ => {}
         }
 
@@ -576,7 +575,7 @@ impl<'b> CodeGenerator<'_, 'b> {
             value_tag,
         ));
         if value.r#type() == Type::Enum {
-            self.push_enum_type_annotation(fq_message_name, field.descriptor.name());
+            self.push_enum_type_annotation(fq_message_name, &field.descriptor);
         }
         self.buf
             .push_str(&format!(", tag = \"{}\")]\n", field.descriptor.number()));
@@ -683,7 +682,7 @@ impl<'b> CodeGenerator<'_, 'b> {
             let ty_tag = self.field_type_tag(&field.descriptor);
             self.buf.push_str(&format!("#[prost({},", ty_tag));
             if field.descriptor.r#type() == Type::Enum {
-                self.push_enum_type_annotation(&oneof_name, field.descriptor.name());
+                self.push_enum_type_annotation(&oneof_name, &field.descriptor);
             }
             self.buf
                 .push_str(&format!(", tag = \"{}\")]\n", field.descriptor.number()));
@@ -996,6 +995,14 @@ impl<'b> CodeGenerator<'_, 'b> {
         self.buf.push_str("}\n");
     }
 
+    fn push_enum_type_annotation(&mut self, fq_message_name: &str, field: &FieldDescriptorProto) {
+        match self.enum_field_repr(fq_message_name, field) {
+            EnumRepr::Int => {}
+            EnumRepr::Open => self.buf.push_str(", enum_type=\"open\""),
+            EnumRepr::Closed => self.buf.push_str(", enum_type=\"closed\""),
+        }
+    }
+
     fn resolve_type(&self, field: &FieldDescriptorProto, fq_message_name: &str) -> String {
         match field.r#type() {
             Type::Float => String::from("f32"),
@@ -1013,7 +1020,7 @@ impl<'b> CodeGenerator<'_, 'b> {
                 crate::BytesType::Bytes => format!("{}::bytes::Bytes", self.context.prost_path()),
             },
             Type::Group | Type::Message => self.resolve_ident(field.type_name()),
-            Type::Enum => match self.enum_field_repr(fq_message_name, field.name()) {
+            Type::Enum => match self.enum_field_repr(fq_message_name, field) {
                 EnumRepr::Int => String::from("i32"),
                 EnumRepr::Open => format!(
                     "{}::OpenEnum<{}>",
@@ -1022,26 +1029,6 @@ impl<'b> CodeGenerator<'_, 'b> {
                 ),
                 EnumRepr::Closed => self.resolve_ident(field.type_name()),
             },
-        }
-    }
-
-    fn push_enum_type_annotation(&mut self, fq_message_name: &str, field_name: &str) {
-        match self.enum_field_repr(fq_message_name, field_name) {
-            EnumRepr::Int => {}
-            EnumRepr::Open => self.buf.push_str(", enum_type=\"open\""),
-            EnumRepr::Closed => self.buf.push_str(", enum_type=\"closed\""),
-        }
-    }
-
-    fn enum_field_repr(&self, fq_message_name: &str, field_name: &str) -> EnumRepr {
-        if self.context.is_typed_enum_field(fq_message_name, field_name) {
-            // FIXME: protobuf enum representation also depends on file syntax for proto2 imports.
-            match self.syntax {
-                Syntax::Proto2 => EnumRepr::Closed,
-                Syntax::Proto3 => EnumRepr::Open,
-            }
-        } else {
-            EnumRepr::Int
         }
     }
 
@@ -1081,6 +1068,10 @@ impl<'b> CodeGenerator<'_, 'b> {
             .chain(ident_path.map(to_snake))
             .chain(iter::once(to_upper_camel(ident_type)))
             .join("::")
+    }
+
+    fn enum_field_repr(&self, fq_message_name: &str, field: &FieldDescriptorProto) -> EnumRepr {
+        self.context.enum_field_repr(fq_message_name, field)
     }
 
     fn field_type_tag(&self, field: &FieldDescriptorProto) -> Cow<'static, str> {
@@ -1171,12 +1162,6 @@ fn can_pack(field: &FieldDescriptorProto) -> bool {
             | Type::Bool
             | Type::Enum
     )
-}
-
-enum EnumRepr {
-    Int,
-    Closed,
-    Open,
 }
 
 struct EnumVariantMapping<'a> {

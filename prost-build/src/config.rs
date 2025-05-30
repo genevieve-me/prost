@@ -16,6 +16,7 @@ use prost_types::{FileDescriptorProto, FileDescriptorSet};
 
 use crate::code_generator::CodeGenerator;
 use crate::context::Context;
+use crate::enums::EnumFeatures;
 use crate::extern_paths::ExternPaths;
 use crate::message_graph::MessageGraph;
 use crate::path::PathMap;
@@ -1143,6 +1144,7 @@ impl Config {
         let mut packages = HashMap::new();
 
         let message_graph = MessageGraph::new(requests.iter().map(|x| &x.1));
+        let enum_features = EnumFeatures::new(requests.iter().map(|x| &x.1));
         let extern_paths = ExternPaths::new(
             &self.extern_paths,
             self.prost_path_or_default(),
@@ -1150,7 +1152,7 @@ impl Config {
             self.prost_types,
         )
         .map_err(|error| Error::new(ErrorKind::InvalidInput, error))?;
-        let mut context = Context::new(self, message_graph, extern_paths);
+        let mut context = Context::new(self, message_graph, enum_features, extern_paths);
 
         for (request_module, request_fd) in requests {
             // Only record packages that have services
