@@ -1058,7 +1058,11 @@ impl<'b> CodeGenerator<'_, 'b> {
             .join("::")
     }
 
-    fn field_type_tag(&self, field: &FieldDescriptorProto, parent_features: FeatureValues) -> Cow<'static, str> {
+    fn field_type_tag(
+        &self,
+        field: &FieldDescriptorProto,
+        parent_features: FeatureValues,
+    ) -> Cow<'static, str> {
         match field.r#type() {
             Type::Float => Cow::Borrowed("float"),
             Type::Double => Cow::Borrowed("double"),
@@ -1085,7 +1089,7 @@ impl<'b> CodeGenerator<'_, 'b> {
                         resolved_features = resolved_features.apply(Some(features));
                     }
                 }
-                
+
                 if resolved_features.message_encoding == MessageEncoding::Delimited {
                     return Cow::Borrowed("group");
                 }
