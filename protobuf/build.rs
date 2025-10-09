@@ -219,5 +219,21 @@ fn compile_proto_files(out_dir: &Path, protobuf_dir: &Path) -> Result<()> {
         )
         .context("failed to compile test protos")?;
 
+    // Compile editions test messages without BTreeMap because their schemas contain circular
+    // references.
+    let editions_dir = protobuf_src.join("editions/golden");
+    let conformance_test_protos_dir = protobuf_src.join("conformance/test_protos");
+    prost_build::Config::new()
+        .protoc_executable(&protoc_executable)
+        .compile_protos(
+            &[
+                editions_dir.join("test_messages_proto2_editions.proto"),
+                editions_dir.join("test_messages_proto3_editions.proto"),
+                conformance_test_protos_dir.join("test_messages_edition2023.proto"),
+            ],
+            &[&editions_dir, &conformance_test_protos_dir],
+        )
+        .context("failed to compile editions test protos")?;
+
     Ok(())
 }
