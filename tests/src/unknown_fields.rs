@@ -36,9 +36,9 @@ fn test_iter_unknown_fields() {
 #[cfg(not(feature = "std"))]
 #[test]
 fn test_iter_unknown_fields() {
+    use crate::alloc::borrow::ToOwned;
     use prost::bytes::Bytes;
     use prost::{Message, UnknownField};
-    use crate::alloc::borrow::ToOwned;
 
     let v2 = MessageWithData {
         a: 12345,
@@ -93,8 +93,8 @@ fn test_roundtrip_unknown_fields() {
 #[cfg(not(feature = "std"))]
 #[test]
 fn test_roundtrip_unknown_fields() {
-    use prost::Message;
     use crate::alloc::borrow::ToOwned;
+    use prost::Message;
 
     let original = MessageWithData {
         a: 12345,
