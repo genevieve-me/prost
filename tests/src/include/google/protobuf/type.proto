@@ -46,7 +46,7 @@ option go_package = "google.golang.org/protobuf/types/known/typepb";
 // A protocol buffer message type.
 //
 // New usages of this message as an alternative to DescriptorProto are strongly
-// discouraged. This message does not reliability preserve all information
+// discouraged. This message does not reliably preserve all information
 // necessary to model the schema and preserve semantics. Instead make use of
 // FileDescriptorSet which preserves the necessary information.
 message Type {
@@ -69,7 +69,7 @@ message Type {
 // A single field of a message type.
 //
 // New usages of this message as an alternative to FieldDescriptorProto are
-// strongly discouraged. This message does not reliability preserve all
+// strongly discouraged. This message does not reliably preserve all
 // information necessary to model the schema and preserve semantics. Instead
 // make use of FileDescriptorSet which preserves the necessary information.
 message Field {
@@ -154,7 +154,7 @@ message Field {
 // Enum type definition.
 //
 // New usages of this message as an alternative to EnumDescriptorProto are
-// strongly discouraged. This message does not reliability preserve all
+// strongly discouraged. This message does not reliably preserve all
 // information necessary to model the schema and preserve semantics. Instead
 // make use of FileDescriptorSet which preserves the necessary information.
 message Enum {
@@ -175,7 +175,7 @@ message Enum {
 // Enum value definition.
 //
 // New usages of this message as an alternative to EnumValueDescriptorProto are
-// strongly discouraged. This message does not reliability preserve all
+// strongly discouraged. This message does not reliably preserve all
 // information necessary to model the schema and preserve semantics. Instead
 // make use of FileDescriptorSet which preserves the necessary information.
 message EnumValue {

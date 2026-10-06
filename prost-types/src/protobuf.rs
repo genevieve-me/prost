@@ -2223,7 +2223,7 @@ pub struct SourceContext {
 /// A protocol buffer message type.
 ///
 /// New usages of this message as an alternative to DescriptorProto are strongly
-/// discouraged. This message does not reliability preserve all information
+/// discouraged. This message does not reliably preserve all information
 /// necessary to model the schema and preserve semantics. Instead make use of
 /// FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -2254,7 +2254,7 @@ pub struct Type {
 /// A single field of a message type.
 ///
 /// New usages of this message as an alternative to FieldDescriptorProto are
-/// strongly discouraged. This message does not reliability preserve all
+/// strongly discouraged. This message does not reliably preserve all
 /// information necessary to model the schema and preserve semantics. Instead
 /// make use of FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -2455,7 +2455,7 @@ pub mod field {
 /// Enum type definition.
 ///
 /// New usages of this message as an alternative to EnumDescriptorProto are
-/// strongly discouraged. This message does not reliability preserve all
+/// strongly discouraged. This message does not reliably preserve all
 /// information necessary to model the schema and preserve semantics. Instead
 /// make use of FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -2483,7 +2483,7 @@ pub struct Enum {
 /// Enum value definition.
 ///
 /// New usages of this message as an alternative to EnumValueDescriptorProto are
-/// strongly discouraged. This message does not reliability preserve all
+/// strongly discouraged. This message does not reliably preserve all
 /// information necessary to model the schema and preserve semantics. Instead
 /// make use of FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -2566,7 +2566,7 @@ impl Syntax {
 /// detailed terminology.
 ///
 /// New usages of this message as an alternative to ServiceDescriptorProto are
-/// strongly discouraged. This message does not reliability preserve all
+/// strongly discouraged. This message does not reliably preserve all
 /// information necessary to model the schema and preserve semantics. Instead
 /// make use of FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -2620,7 +2620,7 @@ pub struct Api {
 /// Method represents a method of an API interface.
 ///
 /// New usages of this message as an alternative to MethodDescriptorProto are
-/// strongly discouraged. This message does not reliability preserve all
+/// strongly discouraged. This message does not reliably preserve all
 /// information necessary to model the schema and preserve semantics. Instead
 /// make use of FileDescriptorSet which preserves the necessary information.
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
