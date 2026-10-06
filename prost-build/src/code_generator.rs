@@ -607,8 +607,11 @@ impl<'b> CodeGenerator<'_, 'b> {
         self.buf.push_str("#[prost(unknown_fields)]\n");
         self.append_field_attributes(fq_message_name, field_name);
         self.push_indent();
-        self.buf
-            .push_str(&format!("pub {}: ::prost::UnknownFieldList,\n", field_name,));
+        self.buf.push_str(&format!(
+            "pub {}: {}::UnknownFieldList,\n",
+            field_name,
+            self.context.prost_path()
+        ));
     }
 
     fn append_oneof_field(
